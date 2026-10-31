@@ -131,6 +131,7 @@ class SimLink:
         self.people = people
         self.angle = C.PAN_CENTER_DEG
         self._abort = False
+        self._room_cache = None
         self.q.put(("READY",))
 
     def close(self):
@@ -145,7 +146,9 @@ class SimLink:
         elif cmd == "STOP":
             self._abort = True
         elif cmd == "PING":
-            self.q.put(("S", self.angle, self._room().get(self.angle, 250)))
+            if self._room_cache is None:
+                self._room_cache = self._room()
+            self.q.put(("S", self.angle, self._room_cache.get(self.angle, 250)))
         elif cmd == "PAN":
             target = int(parts[1])
             threading.Thread(target=self._pan, args=(target,), daemon=True).start()
@@ -169,6 +172,7 @@ class SimLink:
 
     def _sweep(self, frm, to, step):
         room = self._room()
+        self._room_cache = room
         step = step if frm <= to else -step
         a = frm
         while (a <= to) if step > 0 else (a >= to):

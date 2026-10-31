@@ -46,6 +46,10 @@ class StateMachine:
         self.pan_angle = C.PAN_CENTER_DEG
         self.baseline = None
         self.last_readings, self.last_result = [], None
+        self.live = {}             # angle -> cm, continuous poll while READY
+        self._live_dir = 1
+        self._live_angle = C.PAN_CENTER_DEG
+        self._live_next = 0.0
         self._ready_seen = False
         self._baseline_collect = None
         self._ack = False
@@ -118,6 +122,8 @@ class StateMachine:
         self.link.send("STOP")
         self.link.send(f"PAN,{C.PAN_CENTER_DEG}")
         self.pan_angle = C.PAN_CENTER_DEG
+        self._live_angle = C.PAN_CENTER_DEG
+        self._live_next = self.now() + 1.5  # let PAN,90 finish first
         if self.s.readings:
             self.last_readings, self.last_result = self.s.readings, self.s.result
         self.s = Session()
@@ -143,6 +149,8 @@ class StateMachine:
                 self.pan_angle = a
                 if self._baseline_collect is not None:
                     self._baseline_collect.append((a, cm))
+                elif self.s.state == READY:
+                    self.live[a] = cm
                 elif self.s.state == SCAN:
                     self.s.readings.append((a, cm))
                     self.lcd("SCANNING", f"ANGLE {a}")
@@ -182,6 +190,19 @@ class StateMachine:
         if self._phase == "baseline_pan" and (self._ack or self.now() > self._pan_wait_until):
             self.link.send(f"SWEEP,{C.SWEEP_FROM_DEG},{C.SWEEP_TO_DEG},{C.SWEEP_STEP_DEG}")
             self._phase = "baseline_sweep"
+            return
+        if self._baseline_collect is not None or self.now() < self._live_next:
+            return
+        # continuous poll: step one angle, ping, repeat every LIVE_POLL_S, bouncing at the sweep ends
+        self._live_next = self.now() + C.LIVE_POLL_S
+        nxt = self._live_angle + self._live_dir * C.SWEEP_STEP_DEG
+        if nxt > C.SWEEP_TO_DEG or nxt < C.SWEEP_FROM_DEG:
+            self._live_dir = -self._live_dir
+            nxt = self._live_angle + self._live_dir * C.SWEEP_STEP_DEG
+        self._live_angle = nxt
+        self.pan_angle = nxt
+        self.link.send(f"PAN,{nxt}")
+        self.link.send("PING")
 
     def _tick_wake(self):
         j = self.s.job1
