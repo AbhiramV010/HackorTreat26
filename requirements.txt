@@ -1,0 +1,10 @@
+pyserial
+pygame
+numpy
+scipy
+requests
+piper-tts>=1.3
+pyttsx3
+opencv-python<5
+pysstv
+Pillow

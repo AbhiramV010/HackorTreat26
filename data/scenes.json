@@ -1,0 +1,21 @@
+{
+  "themes": [
+    "supply drop", "horde movement", "radio check", "lost survivor",
+    "bad weather", "burning building", "church bells", "broken bridge"
+  ],
+  "fallback_transmissions": [
+    {"message": "HORDE EAST", "spider_line": "East again. Fine. I'll look."},
+    {"message": "FOOD NEAR", "spider_line": "Food. I'm listening. Quietly."},
+    {"message": "ANYONE HOME", "spider_line": "Nobody answers that. Except us."}
+  ],
+  "fallback_scene": {
+    "CLEAR": "Nothing in range. The room is empty, or everyone is holding very still.",
+    "FEW": "{people} living {shape} to the {side}, about {nearest_m} metres away.",
+    "CROWD": "A crowd of {people} living shapes. Nearest is to the {side}, {nearest_m} metres out."
+  },
+  "fallback_reaction": {
+    "CLEAR": "Odd. No humans. I don't trust it.",
+    "FEW": "Oh no. Humans. Don't move. Don't breathe.",
+    "CROWD": "Oh no, oh no, oh no. Too many humans. Retreat!"
+  }
+}
