@@ -116,6 +116,16 @@ class StateMachine:
             self.pan_angle = C.PAN_CENTER_DEG
             self.s.notice = "ZEROED"
 
+    def picture_only(self):
+        """Alt+5: skip the radio and scan, run the Robot36 stage straight away (webcam, face, SSTV, speaker)."""
+        self.audio.stop_all()
+        self._speech_queue.clear()
+        self.s = Session()
+        self.s.picture = Picture().start()
+        self.s.status, self.s.status2 = "SSTV TEST", "CAPTURING"
+        self.goto(PICTURE)
+        self._phase = "build"
+
     def reset(self):
         self.audio.stop_all()
         self._speech_queue.clear()
@@ -195,10 +205,10 @@ class StateMachine:
             return
         # continuous poll: step one angle, ping, repeat every LIVE_POLL_S, bouncing at the sweep ends
         self._live_next = self.now() + C.LIVE_POLL_S
-        nxt = self._live_angle + self._live_dir * C.SWEEP_STEP_DEG
+        nxt = self._live_angle + self._live_dir * C.LIVE_STEP_DEG
         if nxt > C.SWEEP_TO_DEG or nxt < C.SWEEP_FROM_DEG:
             self._live_dir = -self._live_dir
-            nxt = self._live_angle + self._live_dir * C.SWEEP_STEP_DEG
+            nxt = self._live_angle + self._live_dir * C.LIVE_STEP_DEG
         self._live_angle = nxt
         self.pan_angle = nxt
         self.link.send(f"PAN,{nxt}")

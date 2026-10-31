@@ -38,7 +38,7 @@ DECODE_REVEAL_DELAY_S = 1.0
 
 # Pan limits (joystick and l/r/c keys live in the firmware; the HUD has no pan keys)
 PAN_MIN_DEG, PAN_MAX_DEG = 20, 160
-LIVE_POLL_S = 1.0          # READY: one PAN+PING per second, head steps back and forth, HUD map updates live
+LIVE_POLL_S = 0.25          # READY: one PAN+PING per 250 ms, head steps back and forth, HUD map updates live
 
 # Ollama
 OLLAMA_URL = "http://localhost:11434/api/chat"
@@ -63,3 +63,4 @@ PICTURE_W, PICTURE_H = 320, 240
 HUD_AMBER = (255, 176, 0)
 HUD_DIM = (110, 76, 0)
 HUD_BG = (0, 0, 0)
+LIVE_STEP_DEG = 5         # READY live poll step; 5 deg keeps the head moving at 250 ms polls

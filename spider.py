@@ -59,6 +59,8 @@ def main():
                         running = False
                     elif ev.key == pygame.K_TAB:
                         hud.details = not hud.details
+                    elif ev.key == pygame.K_5 and ev.mod & pygame.KMOD_ALT:
+                        sm.picture_only()
                     elif ev.key in keys:
                         sm.key(keys[ev.key])
             sm.tick()

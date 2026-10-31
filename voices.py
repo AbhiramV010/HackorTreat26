@@ -85,7 +85,7 @@ class Voice:
         return None
 
     def _wav_to_sound(self, data):
-        import pygame
+        from audio import make_sound
         with wave.open(io.BytesIO(data), "rb") as w:
             sr, ch, sw, n = w.getframerate(), w.getnchannels(), w.getsampwidth(), w.getnframes()
             raw = w.readframes(n)
@@ -98,8 +98,7 @@ class Voice:
         if sr != C.SAMPLE_RATE:
             idx = np.linspace(0, len(x) - 1, int(len(x) * C.SAMPLE_RATE / sr))
             x = np.interp(idx, np.arange(len(x)), x)
-        pcm = (np.clip(x, -1, 1) * 32767).astype(np.int16)
-        return pygame.sndarray.make_sound(np.ascontiguousarray(pcm))
+        return make_sound((np.clip(x, -1, 1) * 32767).astype(np.int16))
 
     def render(self, text):
         """Blocking. Returns a Sound or None. Cached by text."""

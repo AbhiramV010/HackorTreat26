@@ -19,11 +19,18 @@ def _bandpass(x):
     return sosfilt(sos, x)
 
 
-def _to_sound(x, gain=0.8):
+def make_sound(pcm):
+    """int16 mono array -> Sound, widened to stereo if the mixer opened stereo (Windows often forces it)."""
     import pygame
-    x = np.clip(x * gain, -1, 1)
-    pcm = (x * 32767).astype(np.int16)
+    init = pygame.mixer.get_init()
+    if init and init[2] == 2 and pcm.ndim == 1:
+        pcm = np.column_stack([pcm, pcm])
     return pygame.sndarray.make_sound(np.ascontiguousarray(pcm))
+
+
+def _to_sound(x, gain=0.8):
+    x = np.clip(x * gain, -1, 1)
+    return make_sound((x * 32767).astype(np.int16))
 
 
 def render_beeps(text):

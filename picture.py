@@ -122,7 +122,7 @@ class Picture:
             except OSError:
                 pass
         # cut to the first PICTURE_PLAY_S seconds
+        from audio import make_sound
         arr = pygame.sndarray.array(snd)
         n = int(C.PICTURE_PLAY_S * C.SAMPLE_RATE)
-        arr = np.ascontiguousarray(arr[:n])
-        return pygame.sndarray.make_sound(arr)
+        return make_sound(np.ascontiguousarray(arr[:n]))

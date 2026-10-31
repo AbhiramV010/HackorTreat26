@@ -41,7 +41,7 @@ start "gemma keep-warm" /min python -c "import requests,time;exec(\"while 1:\n t
 :warm_skip
 
 echo [4/4] Rigor  (port %PORT%, model %MODEL%) %EXTRA%
-python -u spider.py --standby --port %PORT% --model %MODEL% %EXTRA%
+python -u spider.py --standby --windowed --port %PORT% --model %MODEL% %EXTRA%
 
 echo.
 echo Rigor exited. Stopping keep-warm pinger.
